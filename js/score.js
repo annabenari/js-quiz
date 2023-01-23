@@ -1,0 +1,7 @@
+function printHighScore(){
+
+}
+
+function clearHighScore(){
+    
+}

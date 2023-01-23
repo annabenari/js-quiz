@@ -7,8 +7,10 @@ var choices = document.getElementById("choices")
 var feedback = document.getElementById("feedback")
 var endScreen = document.getElementById("end-screen")
 var timer = document.getElementById("time")
+var submitbutton = doucment.getElementById('submit')
+var endScreen = doucment.getElementById('end-screen')
 var secondsLeft = 45;
-
+var timerInterval;
 function displayQuestion(){
     questionTitle.innerHTML= questions[currentQuestion].question
     choices.innerHTML=""
@@ -31,38 +33,56 @@ function showFeedback(event){
      }
      else{
         feedback.innerHTML = "incorrect"
+        secondsLeft -= 4;
      }
    
     displayQuestion()
     currentQuestion++
     if(currentQuestion === questions.length){
-        questionPage.remove()
-        endScreen.classList.remove("hide")  
+        ResetGame();
     }
  }
 }
+function StartTimer() {
 
-var timerInterval = setInterval(function() {
+    timerInterval = setInterval(function() {
     secondsLeft--;
     timer.textContent = secondsLeft + " seconds left.";
 
-    if(secondsLeft === 0) {
+    if(secondsLeft <= 0) {
       // Stops execution of action at set interval
       clearInterval(timerInterval);
-     
+        ResetGame();
     }
    
 
   }, 1000);
+}
+
+function ResetGame() {
+    questionPage.remove()
+    endScreen.classList.remove("hide")  
+    secondsLeft = 0; 
+    timer.textContent = secondsLeft + " seconds left.";
+    score = 0;
+}
 
 
-
-
+// function endGame(){
+//     endScreen.textContent = score
+// }
 
 
 function startQuiz(){
     startPage.remove()
     displayQuestion()
+    StartTimer();
+}
+
+function AddInitials()
+{
+
 }
 
 startPage.addEventListener("click", startQuiz)
+submitbutton.addEventListener("click", AddInitials)
