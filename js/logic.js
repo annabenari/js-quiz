@@ -1,9 +1,4 @@
-let questionIndex=0;
-let time = questions.length * 15;
-let timerID;
 
-
-//HTML
 let questionPage = document.getElementById("questions");
 let timer = document.getElementById("time");
 let choices = document.getElementById("choices");
@@ -11,131 +6,114 @@ let submitButton = document.getElementById('submit');
 let startButton = document.getElementById('start');
 let initialsElement = document.getElementById('initials');
 let feedback = document.getElementById("feedback");
-let answer1= document.getElementById("answer1")
-let answer2= document.getElementById("answer2")
-let answer3= document.getElementById("answer3")
-
-
-
-function quesionClick(){
-if(this.value !== questions[currentQuestion].answer){
-    time-= 15;
-}
-if(time< 0){
-    time = 0;
-
-    timer.textContent = time;
-    feedback.textContent = "incorrect";
-     
-}else{
-    feedback.textContent = "correct"
-}
-
-feedback.setAttribute("class", "feedback")
-
-setTimeout(function(){
-    feedback.setAttribute("class", "feedback hide")
-}
-,1000)
-
-currentQuestion++;
-
-if(currentQuestion === questions.length){
-    quizEnd()
-}else{
-    displayQuestion();
-}
-}
-
-
-function displayQuestion(){
-let currentQuestion = questions[questionIndex];
-let title = document.getElementById("question-title")
-title.textContent = displayQuestion.title
-answer1.textContent = currentQuestion.options[0]
-answer2.textContent = currentQuestion.options[1]
-answer3.textContent = currentQuestion.options[2]
-
-questionIndex++;
-// choices.innerHTML = "";
-// currentQuestion.choices.foreach(function(choices,index){
-// let choiceButton = document.createElement("button");
-
-// choiceButton.setAttribute("class", "choices");
-// choiceButton.setAttribute("value", choices);
-// choiceButton.textContent = `${index+ 1}${choices}`;
-// choiceButton.addEventListener("click", quesionClick)
-// choices.append(choiceButton);
-// })
-}
-
-function questionAnswer(){
-    displayQuestion();
-}
-
-answer1.addEventListener("click", questionAnswer())
-
-
-function quizEnd(){
-clearInterval(timerID);
-
+let answer1 = document.getElementById("answer1")
+let answer2 = document.getElementById("answer2")
+let answer3 = document.getElementById("answer3")
 let endScreen = document.getElementById("end-screen");
-endScreen.removeAtrribute("class")
+let startScreen = document.getElementById("start-screen");
+let questionTitle = document.getElementById("question-title")
+let finalScore = document.getElementById("final-score")
 
-let finalScore = document.getElementById("final-score");
-finalScore.textContent = time;
-questionPage.setAttribute("class", "hide");
+//// Game variables
+let questionIndex = 0;
+let time = questions.length * 10;
+let timerID;
+let score = 0;
+let currentQuestion;
+
+//// Handlers
+
+// Reduces the timer by 1 second everytime the interval is triggered
+// if the time has run out it ends the quiz
+function timerCountdown() {
+ if (time > 0) {
+   time--
+   timer.textContent = time;
+ } else {
+   time = 0;
+   timer.textContent = time;
+   endQuiz();
+ }
+}
+
+// handles a click on a question answer. If it's correct if moves on to the next
+// question. If it's wrong it reduces the timer
+function questionOptionClick(event) {
+ if (event.target.textContent === currentQuestion.answer) {
+   feedback.textContent = "Correct!";
+   score++;
+   displayQuestion();
+ } else {
+   time -= 4;
+   if (time <= 0) {
+     time = 0;
+     endQuiz();
+   }
+   timer.textContent = time;
+   feedback.textContent = "Incorrect";
+ }
+}
+
+// Saves the high score to storage
+function saveHighScore() {
+ let initials = initialsElement.value.trim();
+ console.log(initials);
+
+ if (initials !== "") {
+   let highScore = JSON.parse(localStorage.getItem("highscores")) || [];
+   let newScore = {
+     score: score,
+     initials: initials,
+   }
+
+   highScore.push(newScore);
+   localStorage.setItem("highscores", JSON.stringify(highScore));
+
+   window.location.href = ("highscores.html")
+ }
+}
+
+// Checks whether a keypress in the inital submition box is the enter keypress
+// if it is it saves the highscore
+function checkForEnter(event) {
+ if (event.key === "enter") saveHighScore();
 }
 
 
-function timerCountdown(){
-    time--;
-    timer.textContent = time;
-    if(time <= 0){
-        quizEnd();
-    }
+//// Game logic
+
+// Starts the quiz by hiding the starScreen and showing the questions
+function startQuiz() {
+ startScreen.setAttribute("class", "hide")
+ questionPage.removeAttribute("class");
+ timerID = setInterval(timerCountdown, 1000)
+ timer.textContent = time;
+ displayQuestion();
 }
 
-function startQuiz(){
-    let startPage = document.getElementById("start-screen");
-    // startPage.setAttribute("class", "hide");
-    
-    questionPage.removeAttribute("class");
-    
-    timer = setInterval(timerCountdown , 1000)
-
-    timer.textContent = time;
-
-    displayQuestion();
-    console.log("test");
-    }
-
-function saveHighScore(){
-let initials = initialsElement.value.trim();
-console.log(initials);
-
-if(initials !== ""){
-    let highScore = JSON.parse(localStorage.getItem("highscores"))|| [];
-    let newScore = {
-        score: time,
-        initials: initials,
-
-    }
-
-    highScore.push(newScore);
-    localStorage.setItem("highscores", JSON.stringify(highScore));
-
-    window.location.href = ("highscores.html")
-}
+// Displays the next question
+function displayQuestion() {
+ if (questionIndex == questions.length) endQuiz();
+ currentQuestion = questions[questionIndex++];
+ questionTitle.textContent = currentQuestion.title
+ answer1.textContent = currentQuestion.options[0]
+ answer2.textContent = currentQuestion.options[1]
+ answer3.textContent = currentQuestion.options[2]
 }
 
-function checkForEnter(event){
-if(event.key === "enter");
-saveHighScore();
+// Ends the quiz by hiding the questions and showing the end screen
+function endQuiz() {
+ clearInterval(timerID);
+ endScreen.removeAttribute("class")
+ questionPage.setAttribute("class", "hide")
+ finalScore.textContent = score;
 }
 
-
-
+// Register handlers
 startButton.addEventListener("click", startQuiz);
 submitButton.addEventListener("click", saveHighScore);
-initialsElement.addEventListener("keyup" , checkForEnter);
+initialsElement.addEventListener("keyup", checkForEnter);
+
+answer1.addEventListener("click", questionOptionClick)
+answer2.addEventListener("click", questionOptionClick)
+answer3.addEventListener("click", questionOptionClick)
