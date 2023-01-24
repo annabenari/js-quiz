@@ -1,4 +1,4 @@
-let currentQuestion=0;
+let questionIndex=0;
 let time = questions.length * 15;
 let timerID;
 
@@ -11,6 +11,9 @@ let submitButton = document.getElementById('submit');
 let startButton = document.getElementById('start');
 let initialsElement = document.getElementById('initials');
 let feedback = document.getElementById("feedback");
+let answer1= document.getElementById("answer1")
+let answer2= document.getElementById("answer2")
+let answer3= document.getElementById("answer3")
 
 
 
@@ -46,21 +49,31 @@ if(currentQuestion === questions.length){
 
 
 function displayQuestion(){
-let currentQuestion = questions[0];
+let currentQuestion = questions[questionIndex];
 let title = document.getElementById("question-title")
 title.textContent = displayQuestion.title
-choices.innerHTML = "";
-currentQuestion.choices.foreach(function(choices,index){
-let choiceButton = document.createElement("button");
+answer1.textContent = currentQuestion.options[0]
+answer2.textContent = currentQuestion.options[1]
+answer3.textContent = currentQuestion.options[2]
 
-choiceButton.setAttribute("class", "choices");
-choiceButton.setAttribute("value", choices);
-choiceButton.textContent = `${index+ 1}${choices}`;
-choiceButton.addEventListener("click", quesionClick)
-choices.append(choiceButton);
-})
+questionIndex++;
+// choices.innerHTML = "";
+// currentQuestion.choices.foreach(function(choices,index){
+// let choiceButton = document.createElement("button");
+
+// choiceButton.setAttribute("class", "choices");
+// choiceButton.setAttribute("value", choices);
+// choiceButton.textContent = `${index+ 1}${choices}`;
+// choiceButton.addEventListener("click", quesionClick)
+// choices.append(choiceButton);
+// })
 }
 
+function questionAnswer(){
+    displayQuestion();
+}
+
+answer1.addEventListener("click", questionAnswer())
 
 
 function quizEnd(){
