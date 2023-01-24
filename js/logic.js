@@ -46,16 +46,16 @@ if(currentQuestion === questions.length){
 
 
 function displayQuestion(){
-let currentQuestion = questions[displayQuestion];
+let currentQuestion = questions[0];
 let title = document.getElementById("question-title")
 title.textContent = displayQuestion.title
 choices.innerHTML = "";
 currentQuestion.choices.foreach(function(choices,index){
 let choiceButton = document.createElement("button");
 
-choiceButton.setAttribute("class", "choice");
+choiceButton.setAttribute("class", "choices");
 choiceButton.setAttribute("value", choices);
-choiceButton.textContent = $;{index+ 1}$;{choices};
+choiceButton.textContent = `${index+ 1}${choices}`;
 choiceButton.addEventListener("click", quesionClick)
 choices.append(choiceButton);
 })
@@ -85,7 +85,7 @@ function timerCountdown(){
 
 function startQuiz(){
     let startPage = document.getElementById("start-screen");
-    startPage.setAttribute("class", "hide");
+    // startPage.setAttribute("class", "hide");
     
     questionPage.removeAttribute("class");
     
@@ -94,6 +94,7 @@ function startQuiz(){
     timer.textContent = time;
 
     displayQuestion();
+    console.log("test");
     }
 
 function saveHighScore(){
